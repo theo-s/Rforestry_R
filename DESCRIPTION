@@ -1,0 +1,38 @@
+Package: forestryR
+Type: Package
+Title: Random Forests
+Version: 0.1.0
+Author: Sören Künzel, Theo Saarinen, Ling Xie
+Maintainer: Sören R. Künzel <srk@berkeley.edu>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-3 | file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    Rcpp (>= 0.12.9),
+    RcppEigen (>= 0.3.2.2.0),
+    foreach,
+    doParallel,
+    parallel,
+    plyr,
+    methods
+Suggests:
+    testthat,
+    MASS
+RoxygenNote: 6.0.1
+SystemRequirements: C++11
+Collate: 
+    'R_RF.R'
+    'R_RFNode.R'
+    'R_RFTree.R'
+    'R_honestRF.R'
+    'R_honestRFTree.R'
+    'R_linearTree.R'
+    'R_preprocessing.R'
+    'RcppExports.R'
+    'RidgeMSE.R'
+    'selectBestFeat_linear.R'
+LinkingTo: Rcpp,
+           RcppEigen,
+           testthat
