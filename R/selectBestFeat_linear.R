@@ -5,11 +5,11 @@
 #' @name selectBestFeatureLinear
 #' @rdname selectBestFeatureLinear-RFTree
 #' @description Find the best `splitfeature`, `splitValue` pair where
-#' `splitfeature` is one of the features specified by `featureList`. 
+#' `splitfeature` is one of the features specified by `featureList`.
 #' @param x A data frame of all training predictors.
 #' @param y A vector of all training responses.
 #' @param featureList_spit A list of candidate variables to split on
-#' @param featureList_lin A list of variables which should be used to fit the 
+#' @param featureList_lin A list of variables which should be used to fit the
 #' linear model on.
 #' @param sampleIndex A list of index of dataset used in this node and its
 #' children. `sampleIndex` contains two keys `averagingSampleIndex`
@@ -60,20 +60,20 @@ selectBestFeatureLinear <- function(x,
                                     nodesize = list("splittingNodeSize" = 5,
                                                     "averagingNodeSize" = 5),
                                     categoricalFeatureCols = list()) {
-  
+
   if (!all(sampleIndex$averagingSampleIndex == sampleIndex$splittingSampleIndex)) {
     stop("honesty is not implemented yet")
   }
-  
+
   # Get the number of total features
   mtry <- length(featureList_spit)
-  
+
   # Initialize the minimum loss for each feature
   bestSplitLossAll <- rep(Inf, mtry)
   bestSplitValueAll <- rep(NA, mtry)
   bestSplitFeatureAll <- rep(NA, mtry)
   bestSplitCountAll <- rep(0, mtry)
-  
+
   # Iterate each selected features
   for (i in 1:mtry) {
     currentFeature <- featureList_spit[i]
@@ -83,25 +83,25 @@ selectBestFeatureLinear <- function(x,
     # Test if the all the values for the feature are the same, then proceed
     if (length(allUniqueValues) == 1)
       next()
-    
+
     # Test if the current feature is categorical
     if (currentFeature %in% categoricalFeatureCols) {
       # -- Categorical Feature -------------------------------------------------
       stop("Splitting on Categorical Features is not yet implemented")
     } else{
       # -- Continuous Feature --------------------------------------------------
-      
-      warning("Find_ridge_best_split does not take the min node size into account")
-      best_split <- Find_ridge_best_split(
+
+      #warning("Find_ridge_best_split does not take the min node size into account")
+      best_split <- Find_ridge_best_split_slow(
         feat = x,
         y = y,
         linear.idx = featureList_lin,
         current.splitting.idx = i,
-        lambda = lambda,
-        nodesize = nodesize
+        lambda = lambda
+        #nodesize = nodesize
       )
-      
-      
+
+
       bestSplitLossAll[i] <- best_split["shifted_RSS_best"]
       bestSplitValueAll[i] <- best_split["split_val_best"]
       bestSplitFeatureAll[i] <- currentFeature
@@ -110,8 +110,10 @@ selectBestFeatureLinear <- function(x,
       # not implemented nay more.
     }
   }
-  
+
   # Get the best split values among all features
+  bestSplitLossAll[which(is.na(bestSplitLossAll))] <- Inf
+
   bestSplitLoss <- min(bestSplitLossAll)
   bestFeatureIndex <- which(bestSplitLossAll == bestSplitLoss)
   # If we found a feasible splitting point

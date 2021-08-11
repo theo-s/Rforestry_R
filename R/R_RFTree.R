@@ -416,7 +416,7 @@ selectBestFeature <- function(x,
 #' @return root node.
 recursivePartition <- function(x,
                                y,
-                               se,
+                               se = 1,
                                mtry = max(floor(ncol(x) / 3), 1),
                                sampleIndex = list(
                                  "averagingSampleIndex" = 1:length(y),
@@ -433,14 +433,14 @@ recursivePartition <- function(x,
   # Tentatively replaced by the C++ function
   # To switch back, replace rcpp_selectBestFeature with selectBestFeature
   list2env(
-    selectBestFeature(
+    selectBestFeatureLinear(
       x = x,
       y = y,
-      se = se,
-      featureList = selectedFeatureIndex,
+      featureList_spit = selectedFeatureIndex,
+      featureList_lin = 1:ncol(x),
+      lambda =1,
       sampleIndex = sampleIndex,
       nodesize = nodesize,
-      splitrule = splitrule,
       categoricalFeatureCols = categoricalFeatureCols
     ),
     environment()
